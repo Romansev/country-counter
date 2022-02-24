@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CountryNotFoundException;
 use App\Exceptions\IncException;
+use App\Http\Helpers\ResponseBuilder;
 use App\Services\CounterService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -29,12 +30,12 @@ class CounterController extends Controller
             $result = $this->counterService->increment($request->country);
 
         } catch (CountryNotFoundException|IncException $e) {
-            return response()->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
+            return ResponseBuilder::error($e->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ResponseBuilder::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse($result);
+        return ResponseBuilder::success($result);
     }
 
     /**
@@ -45,9 +46,9 @@ class CounterController extends Controller
         try {
             $result = $this->counterService->getAllVisitsCount();
         } catch (Exception $e) {
-            return response()->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
+            return ResponseBuilder::error($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new JsonResponse($result);
+        return ResponseBuilder::success($result);
     }
 }
